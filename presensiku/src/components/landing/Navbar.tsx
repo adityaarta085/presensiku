@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -29,13 +28,11 @@ export default function Navbar({ settings }: { settings: Record<string, any> }) 
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3">
-            <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
-              <Image
+            <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm flex items-center justify-center">
+              <img
                 src={settings.logo_url || '/placeholder.svg'}
                 alt="Logo Sekolah"
-                fill
-                className="object-cover"
-                sizes="40px"
+                className="w-full h-full object-cover"
               />
             </div>
             <span className={`font-bold text-xl tracking-tight ${isScrolled ? 'text-slate-900' : 'text-white'}`}>

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -73,12 +72,10 @@ export default function LoginForm({ settings }: { settings: Record<string, any> 
           className="absolute inset-0 z-0"
         >
           {settings?.login_bg_url ? (
-            <Image
+            <img
               src={settings.login_bg_url}
               alt="School Background"
-              fill
-              className="object-cover"
-              priority
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
@@ -88,20 +85,18 @@ export default function LoginForm({ settings }: { settings: Record<string, any> 
         <div className="absolute inset-0 bg-blue-950/60 z-10" />
 
         <div className="relative z-20 flex flex-col justify-center items-start p-16 text-white h-full max-w-xl">
-          <div className="bg-white p-2 rounded-full mb-8 shadow-2xl">
-            <Image
+          <div className="bg-white p-2 rounded-full mb-8 shadow-2xl w-24 h-24 flex items-center justify-center">
+            <img
               src={settings?.logo_url || '/placeholder.svg'}
               alt="Logo Sekolah"
-              width={80}
-              height={80}
-              className="object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <h1 className="text-4xl font-bold mb-4 leading-tight">{settings?.school_name}</h1>
           <p className="text-blue-100 mb-8">{settings?.school_address}</p>
           <div className="mt-auto">
             <p className="text-blue-200/60 italic text-lg border-l-4 border-blue-400 pl-4">
-              "Membangun generasi disiplin melalui teknologi"quot;Membangun generasi disiplin melalui teknologi"Membangun generasi disiplin melalui teknologi"quot;
+              &quot;Membangun generasi disiplin melalui teknologi&quot;
             </p>
           </div>
         </div>
@@ -117,13 +112,11 @@ export default function LoginForm({ settings }: { settings: Record<string, any> 
         >
           {/* Header Mobile */}
           <div className="lg:hidden flex flex-col items-center mb-10 text-center">
-            <div className="bg-white p-2 rounded-full mb-4 shadow-md border border-slate-100">
-              <Image
+            <div className="bg-white p-2 rounded-full mb-4 shadow-md border border-slate-100 w-20 h-20 flex justify-center items-center">
+              <img
                 src={settings?.logo_url || '/placeholder.svg'}
                 alt="Logo Sekolah"
-                width={64}
-                height={64}
-                className="object-contain"
+                className="w-full h-full object-contain"
               />
             </div>
             <h1 className="text-xl font-bold text-slate-900">{settings?.school_name}</h1>

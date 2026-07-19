@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, School } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,15 +17,12 @@ export default function HeroSection({ settings, studentCount }: { settings: Reco
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="mb-8 relative w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white"
+            className="mb-8 relative w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex justify-center items-center"
           >
-            <Image
+            <img
               src={settings.logo_url || '/placeholder.svg'}
               alt="Logo Sekolah"
-              fill
-              className="object-contain p-2"
-              sizes="(max-width: 768px) 96px, 128px"
-              priority
+              className="w-full h-full object-contain p-2"
             />
           </motion.div>
 
