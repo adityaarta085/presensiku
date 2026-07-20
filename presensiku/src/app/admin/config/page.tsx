@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { revalidatePath } from 'next/cache'
+import LocationPicker from './LocationPicker'
 
 export default async function AdminConfigPage() {
   const supabase = await createClient()
@@ -63,30 +64,7 @@ export default async function AdminConfigPage() {
         </CardHeader>
         <CardContent>
           <form action={updateConfig} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">Latitude Pusat Sekolah</label>
-                    <input
-                        name="gps_latitude"
-                        type="number"
-                        step="any"
-                        defaultValue={config?.gps_latitude}
-                        className="w-full border rounded p-2 text-sm"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">Longitude Pusat Sekolah</label>
-                    <input
-                        name="gps_longitude"
-                        type="number"
-                        step="any"
-                        defaultValue={config?.gps_longitude}
-                        className="w-full border rounded p-2 text-sm"
-                        required
-                    />
-                </div>
-            </div>
+            <LocationPicker initialLat={config?.gps_latitude} initialLng={config?.gps_longitude} />
 
             <div className="space-y-2">
                 <label className="text-sm font-medium">Radius Area Presensi (meter)</label>
