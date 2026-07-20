@@ -9,20 +9,23 @@ export default async function AdminConfigPage() {
 
   const { data: { user } } = await supabase.auth.getUser()
   const { data: adminProfile } = await supabase.from('users').select('school_id').eq('auth_id', user?.id).single()
-  const schoolId = adminProfile?.school_id
+  const schoolId = adminProfile?.school_id || null
 
   // Fetch configs
-  const { data: config } = await supabase
-    .from('school_configs')
-    .select('*')
-    .eq('school_id', schoolId)
-    .single()
+  let query = supabase.from('school_configs').select('*')
+  if (schoolId) {
+    query = query.eq('school_id', schoolId)
+  } else {
+    query = query.is('school_id', null)
+  }
+  const { data: config } = await query.single()
 
   async function updateConfig(formData: FormData) {
     'use server'
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const { data: adminProfile } = await supabase.from('users').select('school_id').eq('auth_id', user?.id).single()
+    const adminSchoolId = adminProfile?.school_id || null
 
     const gpsLat = parseFloat(formData.get('gps_latitude') as string)
     const gpsLng = parseFloat(formData.get('gps_longitude') as string)
@@ -40,14 +43,24 @@ export default async function AdminConfigPage() {
         selfie_mode: selfieMode
     }
 
-    if (adminProfile?.school_id) {
-        // Cek apakah config sudah ada
-        const { data: existing } = await supabase.from('school_configs').select('id').eq('school_id', adminProfile.school_id).single()
-        if (existing) {
-            await supabase.from('school_configs').update(updates).eq('school_id', adminProfile.school_id)
+    let existingQuery = supabase.from('school_configs').select('id')
+    if (adminSchoolId) {
+        existingQuery = existingQuery.eq('school_id', adminSchoolId)
+    } else {
+        existingQuery = existingQuery.is('school_id', null)
+    }
+    const { data: existing } = await existingQuery.single()
+
+    if (existing) {
+        let updateQuery = supabase.from('school_configs').update(updates)
+        if (adminSchoolId) {
+            updateQuery = updateQuery.eq('school_id', adminSchoolId)
         } else {
-            await supabase.from('school_configs').insert({ school_id: adminProfile.school_id, ...updates })
+            updateQuery = updateQuery.is('school_id', null)
         }
+        await updateQuery
+    } else {
+        await supabase.from('school_configs').insert({ school_id: adminSchoolId, ...updates })
     }
 
     revalidatePath('/admin/config')

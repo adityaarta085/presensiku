@@ -15,7 +15,7 @@ export default async function StudentsTeachersPage() {
   const { data: siswaList } = await supabase
     .from('users')
     .select('*, classes(name)')
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('role', 'siswa')
     .order('full_name', { ascending: true })
 
@@ -23,7 +23,7 @@ export default async function StudentsTeachersPage() {
   const { data: guruList } = await supabase
     .from('users')
     .select('*')
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('role', 'guru')
     .order('full_name', { ascending: true })
 

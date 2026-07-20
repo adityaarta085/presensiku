@@ -28,7 +28,7 @@ export default async function AdminReportsPage({
       student_id,
       users!student_id (full_name, nis, classes(name))
     `)
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .gte('date', startDate)
     .lte('date', endDate)
 

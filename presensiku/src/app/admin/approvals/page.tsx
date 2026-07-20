@@ -15,7 +15,7 @@ export default async function ApprovalsPage() {
   const { data: pendingUsers } = await supabase
     .from('users')
     .select('*')
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('is_approved', false)
     .order('created_at', { ascending: false })
 

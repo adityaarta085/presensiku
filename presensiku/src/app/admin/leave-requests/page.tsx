@@ -19,7 +19,7 @@ export default async function LeaveRequestsPage() {
       *,
       users!student_id (full_name, nis)
     `)
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .order('created_at', { ascending: false })
 
   async function updateStatus(formData: FormData) {
