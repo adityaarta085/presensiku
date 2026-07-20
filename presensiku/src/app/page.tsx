@@ -1,25 +1,25 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import LandingPage from '@/components/landing/LandingPage'
-import { getSchoolSettings } from '@/lib/getSchoolSettings'
 
-export default async function Home() {
+export default async function HomePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
-    redirect('/dashboard')
+    const { data: profile } = await supabase.from('users').select('role, is_approved').eq('auth_id', user.id).single()
+    if (profile) {
+      if (!profile.is_approved) redirect('/pending-approval')
+      if (profile.role === 'admin') redirect('/admin')
+      if (profile.role === 'guru') redirect('/guru')
+      if (profile.role === 'siswa') redirect('/siswa')
+    }
+  } else {
+      redirect('/login')
   }
 
-  // Ambil school_settings dari database
-  const settings = await getSchoolSettings()
-
-  // Ambil statistik (jumlah siswa terdaftar)
-  const { count: studentCount } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true })
-    .eq('role', 'student')
-    .eq('status', 'approved')
-
-  return <LandingPage settings={settings} studentCount={studentCount || 500} />
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      {/* Landing page content goes here if user is not authenticated. Since we redirect to login, this will rarely show but it's good practice. */}
+    </main>
+  )
 }

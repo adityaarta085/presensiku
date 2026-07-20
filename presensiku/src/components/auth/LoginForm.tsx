@@ -49,7 +49,7 @@ export default function LoginForm({ settings }: { settings: Record<string, any> 
     }
 
     toast.success('Login berhasil!')
-    router.push('/dashboard')
+    router.push(profile?.role === 'admin' ? '/admin' : profile?.role === 'guru' ? '/guru' : '/siswa')
     router.refresh()
   }
 
