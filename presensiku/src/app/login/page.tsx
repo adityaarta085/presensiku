@@ -8,7 +8,13 @@ export default async function LoginPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
-    redirect('/dashboard')
+    const { data: profile } = await supabase.from('users').select('role, is_approved').eq('auth_id', user.id).single()
+    if (profile) {
+      if (!profile.is_approved) redirect('/pending-approval')
+      if (profile.role === 'admin') redirect('/admin')
+      if (profile.role === 'guru') redirect('/guru')
+      if (profile.role === 'siswa') redirect('/siswa')
+    }
   }
 
   // Ambil school_settings (untuk logo, nama, background)
