@@ -1,21 +1,27 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { revalidatePath } from 'next/cache'
+import CreateUserForm from './CreateUserForm'
+import { ToggleActiveButton } from './ToggleActiveButton'
 
 export default async function StudentsTeachersPage() {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   const { data: adminProfile } = await supabase.from('users').select('school_id').eq('auth_id', user?.id).single()
-  const schoolId = adminProfile?.school_id
+  const schoolId = adminProfile?.school_id || null
+
+  // Fetch Classes
+  const { data: classList } = await supabase
+    .from('classes')
+    .select('id, name')
+    .filter('school_id', schoolId ? 'eq' : 'is', schoolId)
 
   // Fetch Siswa
   const { data: siswaList } = await supabase
     .from('users')
     .select('*, classes(name)')
-    .match(schoolId ? { school_id: schoolId } : {})
+    .filter('school_id', schoolId ? 'eq' : 'is', schoolId)
     .eq('role', 'siswa')
     .order('full_name', { ascending: true })
 
@@ -23,21 +29,9 @@ export default async function StudentsTeachersPage() {
   const { data: guruList } = await supabase
     .from('users')
     .select('*')
-    .match(schoolId ? { school_id: schoolId } : {})
+    .filter('school_id', schoolId ? 'eq' : 'is', schoolId)
     .eq('role', 'guru')
     .order('full_name', { ascending: true })
-
-
-  async function toggleActiveStatus(formData: FormData) {
-    'use server'
-    const id = formData.get('id')
-    const currentStatus = formData.get('currentStatus') === 'true'
-    const supabase = await createClient()
-
-    await supabase.from('users').update({ is_active: !currentStatus }).eq('id', id)
-
-    revalidatePath('/admin/students')
-  }
 
   return (
     <div>
@@ -46,10 +40,19 @@ export default async function StudentsTeachersPage() {
       </div>
 
       <Tabs defaultValue="siswa" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="siswa">Data Siswa</TabsTrigger>
-          <TabsTrigger value="guru">Data Guru</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between items-center mb-4">
+            <TabsList>
+            <TabsTrigger value="siswa">Data Siswa</TabsTrigger>
+            <TabsTrigger value="guru">Data Guru</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="siswa" className="mt-0">
+                <CreateUserForm role="siswa" classes={classList || []} />
+            </TabsContent>
+            <TabsContent value="guru" className="mt-0">
+                <CreateUserForm role="guru" />
+            </TabsContent>
+        </div>
 
         <TabsContent value="siswa">
             <Card>
@@ -80,13 +83,7 @@ export default async function StudentsTeachersPage() {
                                                 <span className="text-red-600 font-semibold">Nonaktif</span>}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <form action={toggleActiveStatus}>
-                                                <input type="hidden" name="id" value={siswa.id} />
-                                                <input type="hidden" name="currentStatus" value={siswa.is_active.toString()} />
-                                                <Button type="submit" size="sm" variant={siswa.is_active ? "destructive" : "default"}>
-                                                    {siswa.is_active ? "Nonaktifkan" : "Aktifkan"}
-                                                </Button>
-                                            </form>
+                                            <ToggleActiveButton userId={siswa.id} isActive={siswa.is_active} />
                                         </td>
                                     </tr>
                                 ))}
@@ -124,13 +121,7 @@ export default async function StudentsTeachersPage() {
                                                 <span className="text-red-600 font-semibold">Nonaktif</span>}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <form action={toggleActiveStatus}>
-                                                <input type="hidden" name="id" value={guru.id} />
-                                                <input type="hidden" name="currentStatus" value={guru.is_active.toString()} />
-                                                <Button type="submit" size="sm" variant={guru.is_active ? "destructive" : "default"}>
-                                                    {guru.is_active ? "Nonaktifkan" : "Aktifkan"}
-                                                </Button>
-                                            </form>
+                                            <ToggleActiveButton userId={guru.id} isActive={guru.is_active} />
                                         </td>
                                     </tr>
                                 ))}
