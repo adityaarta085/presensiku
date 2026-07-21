@@ -15,7 +15,7 @@ export default async function AdminDashboard() {
   const { count: totalSiswa } = await supabase
     .from('users')
     .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('role', 'siswa')
     .eq('is_active', true)
     .eq('is_approved', true)
@@ -26,21 +26,21 @@ export default async function AdminDashboard() {
   const { count: hadirHariIni } = await supabase
     .from('attendance')
     .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('date', today)
     .eq('status', 'hadir')
 
   const { count: terlambatHariIni } = await supabase
     .from('attendance')
     .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('date', today)
     .eq('status', 'terlambat')
 
   const { count: alphaHariIni } = await supabase
     .from('attendance')
     .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('date', today)
     .eq('status', 'alpha')
 
@@ -48,7 +48,7 @@ export default async function AdminDashboard() {
   const { data: pendingAccounts } = await supabase
     .from('users')
     .select('id, full_name, created_at')
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('role', 'siswa')
     .eq('is_approved', false)
     .order('created_at', { ascending: false })
@@ -64,7 +64,7 @@ export default async function AdminDashboard() {
       created_at,
       users (full_name)
     `)
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .in('status', ['pending', 'parent_confirmed'])
     .order('created_at', { ascending: false })
     .limit(5)

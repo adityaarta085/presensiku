@@ -27,7 +27,7 @@ export default async function AdminAttendancePage({
         classes (name)
       )
     `)
-    .eq('school_id', schoolId)
+    .match(schoolId ? { school_id: schoolId } : {})
     .eq('date', dateParam)
     .order('created_at', { ascending: false })
 
